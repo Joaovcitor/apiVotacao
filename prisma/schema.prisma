@@ -1,0 +1,89 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum para definir o tipo da enquete
+enum PollType {
+  CHECKBOX // Para caixas de marcar
+  TEXT     // Para texto livre
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  cpf           String         @unique
+  name          String
+  createdAt     DateTime       @default(now())
+  
+  // Um usuário pode ter vários votos de ambos os tipos
+  checkboxVotes CheckboxVote[]
+  textVotes     TextVote[]
+}
+
+model Poll {
+  id        Int      @id @default(autoincrement())
+  title     String
+  createdAt DateTime @default(now())
+  
+  // Campo crucial que define como a enquete funciona
+  type      PollType @default(CHECKBOX)
+
+  // Relações
+  // Opções só fazem sentido para enquetes do tipo CHECKBOX
+  options       PollOption[]
+
+  // Cada tipo de enquete terá sua própria lista de votos
+  checkboxVotes CheckboxVote[]
+  textVotes     TextVote[]
+}
+
+// Opções só se aplicam a enquetes do tipo CHECKBOX
+model PollOption {
+  id    Int    @id @default(autoincrement())
+  title String
+
+  pollId Int
+  poll   Poll @relation(fields: [pollId], references: [id])
+  
+  // Uma opção pode ter múltiplos votos de caixa de marcar
+  votes  CheckboxVote[]
+}
+
+// Tabela para votos de múltipla escolha (caixas de marcar)
+model CheckboxVote {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+
+  userId       Int
+  pollId       Int
+  pollOptionId Int
+  
+  user       User       @relation(fields: [userId], references: [id])
+  poll       Poll       @relation(fields: [pollId], references: [id])
+  pollOption PollOption @relation(fields: [pollOptionId], references: [id])
+
+  // Um usuário só pode marcar uma opção específica uma vez
+  @@unique([userId, pollOptionId])
+}
+
+// NOVA tabela para votos de texto livre
+model TextVote {
+  id        Int      @id @default(autoincrement())
+  text      String   // O conteúdo da resposta digitada pelo usuário
+  createdAt DateTime @default(now())
+
+  userId Int
+  pollId Int
+  
+  user User @relation(fields: [userId], references: [id])
+  poll Poll @relation(fields: [pollId], references: [id])
+
+  // Um usuário só pode dar uma resposta de texto por enquete
+  @@unique([userId, pollId])
+}

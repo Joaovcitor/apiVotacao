@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    /* Opções Básicas */
+    "target": "ES2020", // Define a versão do JavaScript para a qual o código será compilado. ES2020 é uma boa escolha moderna.
+    "module": "CommonJS", // O sistema de módulos usado pelo Node.js. Essencial para o backend.
+    "outDir": "./dist", // A pasta onde o JavaScript compilado será salvo.
+    "rootDir": "./src", // A pasta onde seu código-fonte TypeScript está.
+
+    /* Opções de Checagem de Tipo Estrita */
+    "strict": true, // Habilita todas as opções de checagem de tipo estritas. Uma ótima prática para evitar bugs.
+    "noImplicitAny": true, // Gera erro se o TypeScript não conseguir inferir o tipo de uma variável (e ela for 'any').
+
+    /* Opções de Resolução de Módulos */
+    "moduleResolution": "node", // Como o TypeScript procura os módulos. 'node' é o padrão para projetos Node.js.
+    "esModuleInterop": true, // Permite compatibilidade entre 'import' de ES Modules e 'require' de CommonJS. Essencial para muitas bibliotecas.
+    "allowJs": true, // Permite que arquivos .js sejam 'importados' e compilados junto com os .ts. CRÍTICO para a migração gradual.
+    "typeRoots": ["./src/@types", "./node_modules/@types"], // Garante que declarações de tipos globais em src/@types sejam carregadas
+
+    /* Opções Avançadas */
+    "skipLibCheck": true, // Pula a checagem de tipos dos arquivos de declaração (.d.ts). Acelera a compilação.
+    "forceConsistentCasingInFileNames": true // Garante que os imports de arquivos tenham o mesmo casing (maiúsculas/minúsculas) do nome do arquivo.
+  },
+  "include": ["src/**/*"], // Diz ao compilador para incluir apenas os arquivos que estão dentro da pasta 'src'.
+  "exclude": ["node_modules", "dist"] // Diz ao compilador para ignorar essas pastas.
+}
