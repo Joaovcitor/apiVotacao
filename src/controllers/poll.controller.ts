@@ -151,6 +151,19 @@ async function deleteVote(req: Request, res: Response) {
   }
 }
 
+async function addOptionInPoll(req: Request, res: Response) {
+  const pollId = parseInt(req.params.id, 10);
+  const optionTitle = req.body.title;
+
+  try {
+    const option = await pollService.addOptionInPoll(pollId, optionTitle);
+    res.status(200).json(option);
+  } catch (e: any) {
+    console.log(e);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+}
+
 export const pollController = {
   createPoll,
   getAllPolls,
@@ -158,4 +171,5 @@ export const pollController = {
   voteOnPoll,
   RemoveOptionPoll,
   deleteVote,
+  addOptionInPoll,
 };

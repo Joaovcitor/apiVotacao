@@ -30,6 +30,15 @@ export async function createPoll(
   });
 }
 
+async function addOptionInPoll(pollId: number, optionTitle: string) {
+  return prisma.pollOption.create({
+    data: {
+      pollId: pollId,
+      title: optionTitle,
+    },
+  });
+}
+
 // --- VOTAÇÃO ---
 
 // Tipagem para os dados do voto, que podem variar
@@ -44,7 +53,14 @@ export async function voteOnPoll(pollId: number, payload: VotePayload) {
   // 1. Primeiro, buscamos a enquete para saber seu tipo
   const poll = await prisma.poll.findUnique({
     where: { id: pollId },
+    include: {
+      checkboxVotes: true,
+    },
   });
+
+  if (poll?.checkboxVotes.find((vote) => vote.userId === payload.userId)) {
+    throw new Error("Usuário já votou na enquete.");
+  }
 
   if (!poll) {
     throw new Error("Enquete não encontrada.");
@@ -164,4 +180,5 @@ export const pollService = {
   voteOnPoll,
   RemoveOptionPoll,
   removeVotes,
+  addOptionInPoll,
 };

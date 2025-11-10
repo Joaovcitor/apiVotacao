@@ -27,4 +27,10 @@ pollRouter.delete(
   pollController.deleteVote
 );
 
+pollRouter.post(
+  "/polls/:id/option",
+  authMiddleware,
+  pollController.addOptionInPoll
+);
+
 export { pollRouter };
