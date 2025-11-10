@@ -94,7 +94,6 @@ async function GetAllPoll() {
     include: {
       // Inclui as opções de resposta para enquetes do tipo CHECKBOX
       options: true,
-
       // Usa o _count para obter um resumo eficiente do número de votos
       _count: {
         select: {
@@ -115,11 +114,11 @@ async function GetPollById(pollId: number) {
       // Para enquetes CHECKBOX: inclui as opções e a contagem de votos de CADA opção
       options: {
         include: {
-          _count: {
-            select: {
-              votes: true, // 'votes' é o nome da relação em PollOption para CheckboxVote
-            },
-          },
+          // _count: {
+          //   select: {
+          //     votes: true, // 'votes' é o nome da relação em PollOption para CheckboxVote
+          //   },
+          // },
         },
       },
       // Para enquetes TEXT: inclui as respostas de texto completas
@@ -137,9 +136,32 @@ async function GetPollById(pollId: number) {
   });
 }
 
+async function RemoveOptionPoll(pollId: number, optionId: number) {
+  const result = await prisma.$transaction(async (tsx) => {
+    await tsx.checkboxVote.deleteMany({
+      where: {
+        pollOptionId: optionId,
+      },
+    });
+
+    return tsx.pollOption.delete({
+      where: {
+        id: optionId,
+        pollId: pollId,
+      },
+    });
+  });
+  return result;
+}
+async function removeVotes(checkBoxId: number) {
+  return await prisma.checkboxVote.delete({ where: { id: checkBoxId } });
+}
+
 export const pollService = {
   createPoll,
   GetAllPoll,
   GetPollById,
   voteOnPoll,
+  RemoveOptionPoll,
+  removeVotes,
 };

@@ -2,6 +2,7 @@
 interface JwtPayload {
   userId: number;
   name: string;
+  role: RolesUser;
 }
 
 // Estende a interface Request do Express

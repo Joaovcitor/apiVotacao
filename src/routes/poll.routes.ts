@@ -14,4 +14,17 @@ pollRouter.get("/polls/:id", pollController.getPollById);
 // Rota para votar em uma enquete (agora protegida)
 pollRouter.post("/polls/:id/vote", authMiddleware, pollController.voteOnPoll); // <-- 3. APLIQUE AQUI TAMBÉM
 
+// Rota para remover uma opção de uma enquete (agora protegida)
+pollRouter.delete(
+  "/polls/:id/option",
+  authMiddleware,
+  pollController.RemoveOptionPoll
+); // <-- 4. APLIQUE AQUI TAMBÉM
+
+pollRouter.delete(
+  "/polls/delete/vote",
+  authMiddleware,
+  pollController.deleteVote
+);
+
 export { pollRouter };

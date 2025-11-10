@@ -19,7 +19,23 @@ async function createUser(userData: Prisma.UserCreateInput) {
  * @returns Um array com todos os usuários.
  */
 async function getAllUsers() {
-  return prisma.user.findMany();
+  return prisma.user.findMany({
+    include: {
+      // Inclui todos os votos de checkbox que o usuário fez
+      checkboxVotes: {
+        include: {
+          poll: { select: { title: true } }, // Em qual enquete votou
+          pollOption: { select: { title: true } }, // Em qual opção votou
+        },
+      },
+      // Inclui todos os votos de texto que o usuário fez
+      textVotes: {
+        include: {
+          poll: { select: { title: true } }, // Em qual enquete votou
+        },
+      },
+    },
+  });
 }
 
 /**

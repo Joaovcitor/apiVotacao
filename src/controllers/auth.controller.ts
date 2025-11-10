@@ -21,6 +21,7 @@ async function login(req: Request, res: Response): Promise<Response> {
       sameSite: "none", // Ajuda a mitigar ataques CSRF
       maxAge: 24 * 60 * 60 * 1000, // Tempo de vida do cookie: 1 dia (em milissegundos)
     });
+    console.log(user);
 
     return res.status(200).json({ message: "Login bem-sucedido!", user });
   } catch (error: any) {

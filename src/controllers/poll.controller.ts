@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { pollService } from "../services/poll.service";
-import { PollType } from "@prisma/client";
+import { PollType, RolesUser } from "@prisma/client";
 
 // Controller para criar uma nova enquete
 async function createPoll(req: Request, res: Response): Promise<Response> {
@@ -103,9 +103,59 @@ async function voteOnPoll(req: Request, res: Response): Promise<Response> {
   }
 }
 
+async function RemoveOptionPoll(
+  req: Request,
+  res: Response
+): Promise<Response> {
+  try {
+    const pollId = parseInt(req.params.id, 10);
+    const optionId = parseInt(req.body.id, 10);
+    const user = req.user.role;
+
+    if (user !== RolesUser.ADMIN) {
+      return res
+        .status(403)
+        .json({ error: "Acesso negado. Permissão insuficiente." });
+    }
+    // Valida se o ID é um número válido
+    if (isNaN(pollId)) {
+      return res.status(400).json({ error: "ID da enquete inválido." });
+    }
+    // Valida se o ID é um número válido
+    if (isNaN(optionId)) {
+      return res.status(400).json({ error: "ID da opção inválido." });
+    }
+
+    const poll = await pollService.RemoveOptionPoll(pollId, optionId);
+
+    if (!poll) {
+      return res.status(404).json({ error: "Enquete não encontrada." });
+    }
+
+    return res.status(200).json({ message: "Enquete excluída com sucesso!" });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno ao excluir enquete." });
+  }
+}
+
+async function deleteVote(req: Request, res: Response) {
+  const id = req.body.id;
+
+  try {
+    const vote = await pollService.removeVotes(id);
+    res.status(200).json(vote);
+  } catch (e: any) {
+    console.log(e);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+}
+
 export const pollController = {
   createPoll,
   getAllPolls,
   getPollById,
   voteOnPoll,
+  RemoveOptionPoll,
+  deleteVote,
 };

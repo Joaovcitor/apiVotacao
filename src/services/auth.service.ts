@@ -2,13 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-
-/**
- * Autentica um usuário pelo CPF.
- * @param cpf O CPF do usuário.
- * @returns Um objeto contendo o usuário e o token JWT.
- * @throws Lança um erro se o usuário não for encontrado.
- */
 async function loginWithCpf(cpf: string) {
   // 1. Encontra o usuário pelo CPF
   const user = await prisma.user.findUnique({
@@ -23,6 +16,7 @@ async function loginWithCpf(cpf: string) {
   const payload = {
     userId: user.id,
     name: user.name,
+    role: user.role,
   };
 
   // 3. Gera o token JWT, assinado com o segredo do .env
@@ -36,6 +30,7 @@ async function loginWithCpf(cpf: string) {
       id: user.id,
       name: user.name,
       cpf: user.cpf,
+      role: user.role,
     },
     token,
   };

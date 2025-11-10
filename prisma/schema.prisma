@@ -20,7 +20,7 @@ model User {
   cpf           String         @unique
   name          String
   createdAt     DateTime       @default(now())
-  
+  role          RolesUser      @default(USER)
   // Um usuário pode ter vários votos de ambos os tipos
   checkboxVotes CheckboxVote[]
   textVotes     TextVote[]
@@ -86,4 +86,9 @@ model TextVote {
 
   // Um usuário só pode dar uma resposta de texto por enquete
   @@unique([userId, pollId])
+}
+
+enum RolesUser {
+  USER
+  ADMIN
 }
