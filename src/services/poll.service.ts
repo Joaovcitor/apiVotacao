@@ -54,12 +54,21 @@ export async function voteOnPoll(pollId: number, payload: VotePayload) {
   const poll = await prisma.poll.findUnique({
     where: { id: pollId },
     include: {
-      checkboxVotes: true,
+      checkboxVotes: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
   if (poll?.checkboxVotes.find((vote) => vote.userId === payload.userId)) {
-    throw new Error("Usuário já votou na enquete.");
+    throw new Error(
+      `Usuário já votou na enquete. Nome do usuário: ${
+        poll.checkboxVotes.find((vote) => vote.userId === payload.userId)?.user
+          .name
+      }, enquete que ele votou: ${poll.title}`
+    );
   }
 
   if (!poll) {
