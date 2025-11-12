@@ -8,6 +8,10 @@ async function loginWithCpf(cpf: string) {
     where: { cpf },
   });
 
+  if (user?.role !== "ADMIN") {
+    throw new Error("Acesso negado. Usuário não é administrador.");
+  }
+
   if (!user) {
     throw new Error("Usuário não encontrado com o CPF fornecido.");
   }
